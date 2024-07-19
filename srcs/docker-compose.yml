@@ -1,0 +1,38 @@
+version: 
+
+services:
+  nginx:
+    container_name: nginx
+    build:
+      context: ./nginx/Dockerfile #where the Dockerfile is (relative to the docker-compose file) 
+    ports:
+      - "80:80" #host:container (puse 80:80 porque es el puerto por defecto de nginx)
+    env_file:
+      - .env 
+    depends_on: #ya lo descubriré en el futuro supongo xd
+      - wordpress #idk if it depends on wordpress or not, just testing
+    networks:
+      - di_caprio #for example
+    expose: #expose internal ports of the container without mapping them to the host
+      - "80" #still don't know what it is actually
+    volumes:
+      - nginx:/whatever/route #vol_name:container_path
+    restart: always #restart the container if it fails
+
+  mariadb:
+    container_name:
+  wordpress:
+    container_name:
+volumes:
+
+networks:
+
+# -build: donde esta el dockerfile y va a ejecutar el run
+# -container_name: nombre del container que en este caso es nginx
+# -restart (MIRAR PARA QUE SIRVE REALMENTE)
+# -port: Primero va el puerto del host y luego el del container
+# -env_file : importa el archivo .env para usar las variables globales
+# -depends_on : con esto indicamos que un container depende del otro por lo tanto wordpress depende de mariadb y nginx depende de wordpross y con esto estamos diciendo el orden en el que se van a iniciar los containers, primero mariadb luego wordpress y por ultimo nginx.
+# -networks : ponemos eo nombre de la network que hemos creado.
+# -expose : para exponer el puerto de los contenedor y no usar port para que no se pueda acceder desde el exterior
+# -volumes : con esto ponemos el volumen:/  ponemos el nombre del volumen y la ruta donde queremos montarlo
