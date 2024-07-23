@@ -1,10 +1,10 @@
-version: 
+version: '3.8'
 
 services:
   nginx:
     container_name: nginx
     build:
-      context: ./nginx/Dockerfile #where the Dockerfile is (relative to the docker-compose file) 
+      context: ./nginx/ #where the Dockerfile is (relative to the docker-compose file) 
     ports:
       - "80:80" #host:container (puse 80:80 porque es el puerto por defecto de nginx)
     env_file:
@@ -20,12 +20,44 @@ services:
     restart: always #restart the container if it fails
 
   mariadb:
-    container_name:
+    container_name: mariadb 
+    build:
+      context: ./mariadb/ #idk if I have to put "Dockerfile" or not
+#   ports:
+#   - "3306:3306" #3306 is the default port for mariadb, but it should be only in the .env
+#aparently for safety reasons, it's better to not expose the mariadb port to the host
+    env_file:
+      - .env
+    depends_on:
+      - mariadb #if it depends on itself, do I have to put it here?
+    networks:
+      - di_caprio
+    expose:
+      - "3306"
+    volumes:
+      - mariadb:/whatever/route
+    restart: always
+ 
   wordpress:
-    container_name:
+   container_name: wordpress
+    build:
+      context: ./wordpress/
+    # ports: wordpress doesnt need to be acceded from the host, cause Nginx will work as a intermediary
+    env_file:
+      - .env
+    depends_on:
+      - mariadb
+    networks:
+      - di_caprio
+    expose:
+    - "9000" #9000 is the default port for wordpress apparently but I have also seen "80" in some examples
+    volumes:
+      - wordpress:/whatever/route
 volumes:
-
+  # I still don't know what do I have to put here :3
 networks:
+  di_caprio:
+    driver: bridge #bridge is the default network driver, it provides a private network shared between the containers and the host, but not with the external world
 
 # -build: donde esta el dockerfile y va a ejecutar el run
 # -container_name: nombre del container que en este caso es nginx
