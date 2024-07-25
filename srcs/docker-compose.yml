@@ -4,7 +4,7 @@ services:
   nginx:
     container_name: nginx
     build:
-      context: ./nginx/ #where the Dockerfile is (relative to the docker-compose file) 
+      context: ./requirements/nginx/ #where the Dockerfile is (relative to the docker-compose file) 
     ports:
       - "80:80" #host:container (puse 80:80 porque es el puerto por defecto de nginx)
     env_file:
@@ -14,7 +14,7 @@ services:
     networks:
       - di_caprio #for example
     expose: #expose internal ports of the container without mapping them to the host
-      - "80" #still don't know what it is actually
+      - "80"
     volumes:
       - nginx:/whatever/route #vol_name:container_path
     restart: always #restart the container if it fails
@@ -22,7 +22,7 @@ services:
   mariadb:
     container_name: mariadb 
     build:
-      context: ./mariadb/ #idk if I have to put "Dockerfile" or not
+      context: ./requirements/mariadb/ #idk if I have to put "Dockerfile" or not
 #   ports:
 #   - "3306:3306" #3306 is the default port for mariadb, but it should be only in the .env
 #aparently for safety reasons, it's better to not expose the mariadb port to the host
@@ -41,7 +41,7 @@ services:
   wordpress:
    container_name: wordpress
     build:
-      context: ./wordpress/
+      context: ./requirements/wordpress/
     # ports: wordpress doesnt need to be acceded from the host, cause Nginx will work as a intermediary
     env_file:
       - .env
