@@ -6,7 +6,7 @@ services:
     build:
       context: ./requirements/nginx/ #where the Dockerfile is (relative to the docker-compose file) 
     ports: 
-      - "8080:8080" #host:container (puse 80:80 porque es el puerto por defecto de nginx)
+      - "8080:80" #host:container (puse 80:80 porque es el puerto por defecto de nginx)
     #debería ser 80:80 porque es el puerto por defecto de nginx, pero puse 8080:8080 porque tiene que ser mayor a 1024 hasta que trabaje en la máquina virtual
     env_file:
       - .env 

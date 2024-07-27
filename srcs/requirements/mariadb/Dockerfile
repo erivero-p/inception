@@ -2,22 +2,31 @@
 # Especifica la imagen base
 FROM  debian:bullseye
 
-# # Establece el directorio de trabajo (no sé si lo necesito)
-# WORKDIR /app #por ejemplo
+# Upgrades system
+RUN apt update -y && apt upgrade -y
+# Installs mariadb
+RUN apt install mariadb-server -y 
+# Removes the package lists from the image, reducing the image size
+# also removes the default configuration file
+RUN rm -rf /var/lib/apt/lists/* && \
+	rm /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# # por ejemplo para copiar archivos de configuración
-# COPY 
+# creates the directory where the socket will be stored
+RUN mkdir -p /run/mysqld/ && \
+    chown -R mysql:mysql /run/mysqld/ && \
+    chmod -R 755 /run/mysqld
+# copies the configuration file
+COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
-# # RUN ejecuta comandos en la terminal
-# RUN 
+# creates the tools directory and copies the script to configure the server
+RUN mkdir -p /root/tools/
+COPY ./tools/init.sh /root/tools/init.sh
+RUN chmod +x /root/tools/init.sh
 
-# # Copia el resto de los archivos de la aplicación
-# COPY . .
+# executes the script to configure the server
+CMD [ "bash", "/root/tools/init.sh" ]
 
-# # Expone el puerto que la aplicación utilizará
-# # creo que en el caso de mariadb no es necesario
-# EXPOSE 3306
+EXPOSE 3306
 
- # Comando para ejecutar la aplicación
- CMD ["sleep", "10000"]
+#  CMD ["sleep", "10000"]
 # provisional obviamente
