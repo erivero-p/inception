@@ -1,25 +1,26 @@
-# Especifica la imagen base
+# dockerfile for wordpress
+#specifies the base image
 FROM  debian:bullseye
 #upgrades system
 RUN apt update -y && apt upgrade -y 
-#installs nginx and ufw
-RUN apt -y install nginx
-#copies nginx configuration file
-COPY ./conf/nginx.conf /etc/nginx/nginx.conf
-#664 gives write permission to owner and read permission to group and others
-RUN chmod 644 /etc/nginx/nginx.conf
-#he visto que aquí la gente copia un .sh (en tools) y le da permisos para luego
-#ejecutarlo en CMD, pero no sé qué hace ese .sh :c
+#installs wordpress requirements
+RUN apt -y install unzip wget php7.4 php-fpm php-mysql php-curl
 
-#instalamos openssl porque nginx no gestiona bien los certificados por defecto
-#generamos un certificado SSL x.509, sin cifrar la clave privada (-nodes), válido por 365 días
-#creamos una nueva clave RSA de 2048 bits y guardamos clave y certificado en sus respectvos archivos
-RUN apt -y install openssl
-RUN mkdir -p $SSL_DIR
-RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "$SSL_SUBJECT" -keyout $SSL_KEY -out $SSL_CERT
+#removes the package lists from the image, reducing the image size
+#RUN rm -rf /var/lib/apt/lists/*
+# idk if I have to do this also in wordorpess, I did it in nginx
 
-EXPOSE 443
+COPY ./conf/www.conf /etc/php/7.4/fpm/pool.d/www.conf
 
-# Comando para ejecutar la aplicación
- CMD ["sleep", "10000"]
-# provisional obviamente
+# -p flag creates the directory if it doesn't exist
+RUN mkdir -p root/tools/ 
+
+COPY ./tools/wp_download.sh /root/tools/wp_download.sh
+COPY ./tools/wp_init.sh /root/tools/wp_init.sh
+# I would like to have a script to download wordpress and another to configure it
+# I may call the script to download wordpress from the script to configure it
+
+RUN chmod +x /root/tools/wp_download.sh && chmod +x /root/tools/init.sh
+#if i didnt call the download.sh script from the init.sh script, I would have to call it here
+# RUN /root/tools/wp_download.sh
+CMD [ "bash", "/root/tools/wp_init.sh" ]
