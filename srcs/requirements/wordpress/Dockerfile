@@ -1,23 +1,25 @@
-
 # Especifica la imagen base
 FROM  debian:bullseye
+#upgrades system
+RUN apt update -y && apt upgrade -y 
+#installs nginx and ufw
+RUN apt -y install nginx
+#copies nginx configuration file
+COPY ./conf/nginx.conf /etc/nginx/nginx.conf
+#664 gives write permission to owner and read permission to group and others
+RUN chmod 644 /etc/nginx/nginx.conf
+#he visto que aquí la gente copia un .sh (en tools) y le da permisos para luego
+#ejecutarlo en CMD, pero no sé qué hace ese .sh :c
 
-# # Establece el directorio de trabajo (no sé si lo necesito)
-# WORKDIR /app #por ejemplo
+#instalamos openssl porque nginx no gestiona bien los certificados por defecto
+#generamos un certificado SSL x.509, sin cifrar la clave privada (-nodes), válido por 365 días
+#creamos una nueva clave RSA de 2048 bits y guardamos clave y certificado en sus respectvos archivos
+RUN apt -y install openssl
+RUN mkdir -p $SSL_DIR
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "$SSL_SUBJECT" -keyout $SSL_KEY -out $SSL_CERT
 
-# # por ejemplo para copiar archivos de configuración
-# COPY 
+EXPOSE 443
 
-# # RUN ejecuta comandos en la terminal
-# RUN 
-
-# # Copia el resto de los archivos de la aplicación
-# COPY . .
-
-# # Expone el puerto que la aplicación utilizará
-# # creo que en el caso de mariadb no es necesario
-# EXPOSE 3306
-
- # Comando para ejecutar la aplicación
+# Comando para ejecutar la aplicación
  CMD ["sleep", "10000"]
 # provisional obviamente
