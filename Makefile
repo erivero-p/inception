@@ -6,7 +6,7 @@
 #    By: erivero- <erivero-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/01 10:39:50 by erivero-          #+#    #+#              #
-#    Updated: 2024/08/01 10:39:57 by erivero-         ###   ########.fr        #
+#    Updated: 2024/08/06 16:17:31 by erivero-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -32,7 +32,7 @@ fclean:
 		@docker system prune --all --force --volumes
 		@docker network prune --force
 		@docker volume prune --force
-		@docker volume rm $(docker volume ls -q)
+		@docker volume rm $$(docker volume ls -qf dangling=true)
 		@rm -rf ~/data/wordpress
 		@rm -rf ~/data/mariadb
 

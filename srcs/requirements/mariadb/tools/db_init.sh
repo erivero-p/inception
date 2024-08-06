@@ -1,8 +1,8 @@
 #!/bin/bash
 
-# service mariadb start # a way to start the service but 'service' can not be available in some containers
+service mariadb start # a way to start the service but 'service' can not be available in some containers
 
-mysqld_safe & # starts the service
+#mysqld_safe & # starts the service
 
 while ! mysqladmin ping --silent; do # waits for the service to start
     echo "Waiting for MariaDB to start..."
