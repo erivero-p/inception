@@ -15,8 +15,8 @@ services:
     
     env_file:
       - .env
-    depends_on: #ya lo descubriré en el futuro supongo xd
-      - wordpress #idk if it depends on wordpress or not, just testing
+    # depends_on: #ya lo descubriré en el futuro supongo xd
+    #   - wordpress #idk if it depends on wordpress or not, just testing
     networks:
       - di_caprio #for example
     expose: #expose internal ports of the container without mapping them to the host
@@ -44,21 +44,21 @@ services:
       - db:/var/lib/mysql
     restart: always
  
-  wordpress:
-    container_name: wordpress
-    build:
-      context: ./requirements/wordpress/
-    # ports: wordpress doesnt need to be acceded from the host, cause Nginx will work as a intermediary
-    env_file:
-      - .env
-    depends_on:
-      - mariadb
-    networks:
-      - di_caprio
-    expose:
-    - "9000" #9000 is the default port for wordpress apparently but I have also seen "80" in some examples
-    volumes:
-      - wp:/var/www/wordpress
+  # wordpress:
+  #   container_name: wordpress
+  #   build:
+  #     context: ./requirements/wordpress/
+  #   # ports: wordpress doesnt need to be acceded from the host, cause Nginx will work as a intermediary
+  #   env_file:
+  #     - .env
+  #   depends_on:
+  #     - mariadb
+  #   networks:
+  #     - di_caprio
+  #   expose:
+  #   - "9000" #9000 is the default port for wordpress apparently but I have also seen "80" in some examples
+  #   volumes:
+  #     - wp:/var/www/wordpress
 volumes:
   wp:
     name: wp

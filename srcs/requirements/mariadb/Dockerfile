@@ -12,7 +12,7 @@ RUN rm -rf /var/lib/apt/lists/* && \
 
 # creates the directory where the socket will be stored
 RUN mkdir -p /run/mysqld/ && \
-#   chown -R mysql:mysql /run/mysqld/ && \ ; not totally sure if this is necessary
+    chown -R mysql:mysql /run/mysqld/ && \
     chmod -R 755 /run/mysqld
 # copies the configuration file
 COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf

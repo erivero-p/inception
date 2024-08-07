@@ -6,7 +6,7 @@
 #    By: erivero- <erivero-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/01 10:39:50 by erivero-          #+#    #+#              #
-#    Updated: 2024/08/06 16:17:31 by erivero-         ###   ########.fr        #
+#    Updated: 2024/08/07 13:02:13 by erivero-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,6 +18,8 @@ all:
 re:
 		@rm -rf ~/data/mariadb/*
 		@rm -rf ~/data/wordpress/*
+		@mkdir -p ~/data/mariadb
+		@mkdir -p ~/data/wordpress
 		@docker compose -f ./srcs/docker-compose.yml up -d --build
 
 down:
