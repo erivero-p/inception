@@ -8,7 +8,7 @@ RUN apt -y install nginx
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 COPY ./tools/init.sh /root/tools/init.sh
 
-COPY ./conf/index.html /var/www/index.html
+# COPY ./conf/index.html /var/www/index.html
 
 #664 gives write permission to owner and read permission to group and others
 RUN chmod 644 /etc/nginx/nginx.conf 

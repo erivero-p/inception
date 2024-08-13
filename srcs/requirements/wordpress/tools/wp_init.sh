@@ -9,6 +9,10 @@ tar -xzf /var/www/latest.tar.gz -C /var/www && rm /var/www/latest.tar.gz
 echo "WordPress downloaded"
 
 PHAR="/usr/local/bin/wp-cli.phar"
+
+echo "Checking if wp-cli is installed..."
+ls /usr/local/bin/
+sleep 5
 WP_CLI_URL="https://raw.githubusercontent.com/wp-cli/builds/gh-pages/phar/wp-cli.phar"
 
 # Download and install wp-cli
@@ -39,5 +43,5 @@ if [ ! -e "/var/www/wordpress/wp-config.php" ]; then
 	echo "${GREEN}WordPress Configured${NC}"
 fi
 
-#php-fpm7.4 -F
-/usr/sbin/php-fpm7.4 -y /etc/php/7.4/fpm/php-fpm.conf -F
+php-fpm7.4 -F
+#/usr/sbin/php-fpm7.4 -y /etc/php/7.4/fpm/php-fpm.conf -F
