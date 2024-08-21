@@ -3,10 +3,15 @@ FROM  debian:bullseye
 #upgrades system
 RUN apt update -y && apt upgrade -y 
 #installs nginx and ufw
-RUN apt -y install nginx
+RUN apt -y install nginx ufw
+RUN ufw allow https
 #copies nginx configuration file
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
 COPY ./tools/init.sh /root/tools/init.sh
+COPY ../tools/erivero-.42.fr.crt /etc/nginx/ssl/erivero-.42.fr.crt
+COPY ../tools/erivero-.42.fr.key /etc/nginx/ssl/erivero-.42.fr.key
+
+RUN chmpd 600 /etc/nginx/ssl/erivero-.42.fr.crt /etc/nginx/ssl/erivero-.42.fr.key
 
 # COPY ./conf/index.html /var/www/index.html
 
@@ -21,11 +26,11 @@ RUN chmod +x /root/tools/init.sh
 RUN apt -y install openssl
 # RUN mkdir -p /etc/nginx/ssl
 
-EXPOSE 10443
+EXPOSE 443
 
 # Comando para ejecutar la aplicación
 # CMD ["./root/tools/init.sh"]
 
-RUN "./root/tools/init.sh"
+# RUN "./root/tools/init.sh"
 
 CMD ["nginx", "-g", "daemon off;"]
