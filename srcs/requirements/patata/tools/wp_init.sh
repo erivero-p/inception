@@ -27,6 +27,7 @@ else
 	echo "wp-cli is already installed"
 fi
 
+
 if [ ! -d "/run/php" ]; then #a directory
 	mkdir -p "/run/php" 
 fi 
@@ -39,7 +40,7 @@ if [ ! -e "/var/www/wordpress/wp-config.php" ]; then
 					--dbpass=$MDB_PASSWORD --dbhost=$MDB_HOSTNAME:3306 \
 					--path='/var/www/wordpress/'
 	${PHAR} core install     --url=$DOMAIN --title=$WP_SITE_TITLE --admin_user=$WP_ROOT_USER --admin_password=$WP_ROOT_PASSWORD --admin_email=$WP_ROOT_EMAIL --allow-root --path='/var/www/wordpress/'
-	${PHAR} user create      $WORDPRESS_USER $WP_EMAIL --role=author --user_pass=$WP_PASSWORD --allow-root --path='/var/www/wordpress/'
+	${PHAR} user create      $WP_USER $WP_EMAIL --role=author --user_pass=$WP_PASSWORD --allow-root --path='/var/www/wordpress/'
 	echo "${GREEN}WordPress Configured${NC}"
 fi
 
