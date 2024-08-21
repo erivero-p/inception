@@ -6,20 +6,18 @@
 #    By: erivero- <erivero-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/08/01 10:39:50 by erivero-          #+#    #+#              #
-#    Updated: 2024/08/08 16:43:25 by erivero-         ###   ########.fr        #
+#    Updated: 2024/08/21 12:03:43 by erivero-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
 all:
-		@mkdir -p ~/data/mariadb
-		@mkdir -p ~/data/wordpress
+		@sudo mkdir -p ~/data/mariadb
+		@sudo mkdir -p ~/data/wordpress
 		@docker compose -f ./srcs/docker-compose.yml up
 
 re:
 		@rm -rf ~/data/mariadb/*
 		@rm -rf ~/data/wordpress/*
-		@mkdir -p ~/data/mariadb
-		@mkdir -p ~/data/wordpress
 		@docker compose -f ./srcs/docker-compose.yml up -d --build
 
 down:
