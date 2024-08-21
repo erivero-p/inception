@@ -10,28 +10,24 @@ services:
     #debería ser 80:80 porque es el puerto por defecto de nginx, pero puse 8080:8080 porque tiene que ser mayor a 1024 hasta que trabaje en la máquina virtual
     
     ports:
-      - "10443:443" # Cambair por 443:443
-      - "8080:80"
-    
+      - "443:443" # Cambair por 443:443
     env_file:
       - .env
     depends_on: #ya lo descubriré en el futuro supongo xd
       - wordpress #idk if it depends on wordpress or not, just testing
     networks:
       - di_caprio #for example
-    expose: #expose internal ports of the container without mapping them to the host
-      - "8080"
+    # expose: #expose internal ports of the container without mapping them to the host
+    # in nginx case, Im mapping the 443 port to the host, so I dont need to expose it
     volumes:
-      - wp:/var/www/wordpress
+      - wp:/var/www/
+    # here i had /var/www/wordpress but I changed it to /var/www/ because I think it's the root directory of the server
     restart: always #restart the container if it fails
 
   mariadb:
     container_name: mariadb 
     build:
-      context: ./requirements/mariadb/ #idk if I have to put "Dockerfile" or not
-#   ports:
-#   - "3306:3306" #3306 is the default port for mariadb, but it should be only in the .env
-#aparently for safety reasons, it's better to not expose the mariadb port to the host
+      context: ./requirements/mariadb/
     env_file:
       - .env
     # depends_on:
