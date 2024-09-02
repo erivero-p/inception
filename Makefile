@@ -1,42 +1,40 @@
-# **************************************************************************** #
-#                                                                              #
-#                                                         :::      ::::::::    #
-#    Makefile                                           :+:      :+:    :+:    #
-#                                                     +:+ +:+         +:+      #
-#    By: erivero- <erivero-@student.42.fr>          +#+  +:+       +#+         #
-#                                                 +#+#+#+#+#+   +#+            #
-#    Created: 2024/08/01 10:39:50 by erivero-          #+#    #+#              #
-#    Updated: 2024/08/21 12:03:43 by erivero-         ###   ########.fr        #
-#                                                                              #
-# **************************************************************************** #
+SHELL:= /bin/bash
 
-all:
-		@sudo mkdir -p ~/data/mariadb
-		@sudo mkdir -p ~/data/wordpress
-		@docker compose -f ./srcs/docker-compose.yml up
+DOCKER_COMPOSE = docker compose
+DC_FILE = srcs/docker-compose.yml
 
-re:
-		@rm -rf ~/data/mariadb/*
-		@rm -rf ~/data/wordpress/*
-		@docker compose -f ./srcs/docker-compose.yml up -d --build
+all: up
 
+up:
+	sudo mkdir -p /home/erivero-/data/mariadb
+	sudo mkdir -p /home/erivero-/data/wordpress
+	$(DOCKER_COMPOSE) -f $(DC_FILE) up -d --build
+
+help:
+	@echo "make up start up the cluster"
+	@echo "make down shut down the cluster"
+	@echo "make clean to clean the docker system"
+	@echo "make fclean to delete the volume"
+
+stop:
+	docker stop -t 0 $(shell docker ps -q)
 down:
-		@docker compose -f ./srcs/docker-compose.yml down
+	docker stop -t 0 $(shell docker ps -q)
+	$(DOCKER_COMPOSE) -f $(DC_FILE) down
 
-clean: down
-		@rm -rf ~/data/mariadb
-		@rm -rf ~/data/wordpress
+clean:
+	docker system prune -af
 
-fclean:
-		@docker stop $$(docker ps -qa)
-		@docker system prune --all --force --volumes
-		@docker network prune --force
-		@docker volume prune --force
-		@docker volume rm $$(docker volume ls -qf dangling=true)
-		@rm -rf ~/data/wordpress
-		@rm -rf ~/data/mariadb
+fclean: down clean 
+	docker volume rm $(shell docker volume ls -q)
 
-logs:
-		@docker compose -f ./srcs/docker-compose.yml logs
+re: fclean up
 
-.PHONY: all re down clean fclean logs
+exec_nginx:
+	docker exec -it nginx-container /bin/bash
+
+exec_wordpress:
+	docker exec -it wordpress-container /bin/bash
+
+exec_mariadb:
+	docker exec -it mariadb-container /bin/bash

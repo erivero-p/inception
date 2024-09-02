@@ -1,85 +1,55 @@
-# version: '3.8'
-
 services:
   nginx:
-    container_name: nginx
-    build:
-      context: ./requirements/nginx/ #where the Dockerfile is (relative to the docker-compose file) 
-    # ports: 
-    #   - "8080:80" #host:container (puse 80:80 porque es el puerto por defecto de nginx)
-    #debería ser 80:80 porque es el puerto por defecto de nginx, pero puse 8080:8080 porque tiene que ser mayor a 1024 hasta que trabaje en la máquina virtual
-    
-    ports:
-      - "443:443" # Cambair por 443:443
-    env_file:
-      - .env
-    depends_on: #ya lo descubriré en el futuro supongo xd
-      - wordpress #idk if it depends on wordpress or not, just testing
-    networks:
-      - di_caprio #for example
-    # expose: #expose internal ports of the container without mapping them to the host
-    # in nginx case, Im mapping the 443 port to the host, so I dont need to expose it
-    volumes:
-      - wp:/var/www/
-    # here i had /var/www/wordpress but I changed it to /var/www/ because I think it's the root directory of the server
-    restart: always #restart the container if it fails
-
-  mariadb:
-    container_name: mariadb 
-    build:
-      context: ./requirements/mariadb/
-    env_file:
-      - .env
-    # depends_on:
-    #   - mariadb #if it depends on itself, do I have to put it here?
+    container_name: nginx-container
+    build: ./requirements/nginx
     networks:
       - di_caprio
-    expose:
-      - "3306"
+    depends_on:
+      - wordpress
+    ports:
+      - "443:443"
     volumes:
-      - db:/var/lib/mysql
+      - wp:/var/www/html
+    env_file: 
+      - .env
     restart: always
- 
-  wordpress:
-    container_name: wordpress
-    build:
-      context: ./requirements/wordpress/
-    # ports: wordpress doesnt need to be acceded from the host, cause Nginx will work as a intermediary
+  mariadb:
+    container_name: mariadb-container
+    build: ./requirements/mariadb
+    networks:
+      - di_caprio
+    volumes:
+       - db:/var/lib/mysql
     env_file:
       - .env
+    restart: always
+  wordpress:
+    container_name: wordpress-container
+    build: ./requirements/wordpress
+    networks:
+      - di_caprio
     depends_on:
       - mariadb
-    networks:
-      - di_caprio
-    expose:
-    - "9000" #9000 is the default port for wordpress apparently but I have also seen "80" in some examples
     volumes:
-      - wp:/var/www/wordpress
-volumes:
-  wp:
-    name: wp
-    driver: local
-    driver_opts:
-      device: /home/erivero-/data/wordpress
-      o: bind
-      type: none
-  db:
-    name: db
-    driver: local
-    driver_opts:
-      device: /home/erivero-/data/mariadb
-      o: bind
-      type: none
+      - wp:/var/www/html
+    env_file: 
+      - .env
+    restart: always
+
 networks:
   di_caprio:
-    driver: bridge #bridge is the default network driver, it provides a private network shared between the containers and the host, but not with the external world
+    driver: bridge
 
-# -build: donde esta el dockerfile y va a ejecutar el run
-# -container_name: nombre del container que en este caso es nginx
-# -restart (MIRAR PARA QUE SIRVE REALMENTE)
-# -port: Primero va el puerto del host y luego el del container
-# -env_file : importa el archivo .env para usar las variables globales
-# -depends_on : con esto indicamos que un container depende del otro por lo tanto wordpress depende de mariadb y nginx depende de wordpross y con esto estamos diciendo el orden en el que se van a iniciar los containers, primero mariadb luego wordpress y por ultimo nginx.
-# -networks : ponemos eo nombre de la network que hemos creado.
-# -expose : para exponer el puerto de los contenedor y no usar port para que no se pueda acceder desde el exterior
-# -volumes : con esto ponemos el volumen:/  ponemos el nombre del volumen y la ruta donde queremos montarlo
+volumes:
+  db:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/erivero-/data/mariadb
+  wp:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: /home/erivero-/data/wordpress

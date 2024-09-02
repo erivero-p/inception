@@ -1,36 +1,23 @@
-# Especifica la imagen base
-FROM  debian:bullseye
-#upgrades system
-RUN apt update -y && apt upgrade -y 
-#installs nginx and ufw
-RUN apt -y install nginx ufw
-RUN ufw allow https
-#copies nginx configuration file
+FROM debian:bullseye
+
+#upgrades system and installs the necessary packages
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install nginx openssl tini -y
+
+# copies config and init files givin them the necessary permissions
 COPY ./conf/nginx.conf /etc/nginx/nginx.conf
-COPY ./tools/init.sh /root/tools/init.sh
-COPY ../tools/erivero-.42.fr.crt /etc/nginx/ssl/erivero-.42.fr.crt
-COPY ../tools/erivero-.42.fr.key /etc/nginx/ssl/erivero-.42.fr.key
-
-RUN chmpd 600 /etc/nginx/ssl/erivero-.42.fr.crt /etc/nginx/ssl/erivero-.42.fr.key
-
-# COPY ./conf/index.html /var/www/index.html
-
-#664 gives write permission to owner and read permission to group and others
+COPY ./tools/nginx.sh /tmp/nginx.sh
 RUN chmod 644 /etc/nginx/nginx.conf 
-RUN chmod +x /root/tools/init.sh
+RUN chmod +x /tmp/nginx.sh
 
-
-#instalamos openssl porque nginx no gestiona bien los certificados por defecto
-#generamos un certificado SSL x.509, sin cifrar la clave privada (-nodes), válido por 365 días
-#creamos una nueva clave RSA de 2048 bits y guardamos clave y certificado en sus respectvos archivos
-RUN apt -y install openssl
-# RUN mkdir -p /etc/nginx/ssl
-
+#exposes the 443 port
 EXPOSE 443
 
-# Comando para ejecutar la aplicación
-# CMD ["./root/tools/init.sh"]
+#sets the entrypoint with tini to init the container
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
-# RUN "./root/tools/init.sh"
+#creates the ssl certificate
+RUN mkdir -p /etc/nginx/ssl
+RUN openssl req -x509 -nodes -days 365 -newkey rsa:2048 -subj "/C=SP/ST=Malaga/L=Malaga/O=42 Malaga/OU=erivero-/CN=erivero-" -keyout "/etc/nginx/ssl/erivero-.key" -out "/etc/nginx/ssl/erivero-.crt"
 
 CMD ["nginx", "-g", "daemon off;"]

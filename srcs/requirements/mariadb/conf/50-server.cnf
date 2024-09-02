@@ -1,61 +1,13 @@
-# MySQL Server Configuration File
-
-# Server section is empty because no specific server settings are needed
-# [server] 
-
-# MySQL daemon settings
 [mysqld]
 
-# The user that the MySQL server runs as
 user					= mysql
-
-# The file where the server's process ID is stored
 pid-file				= /run/mysqld/mysqld.pid
-
-# The socket file used for local connections
 socket					= /run/mysqld/mysqld.sock
-
-# The port number the server listens on
 port					= 3306
-
-# The base directory for the MySQL installation
 basedir					= /usr
-
-# The directory where the database files are stored
 datadir					= /var/lib/mysql
-
-# The directory for temporary files
 tmpdir					= /tmp
-
-# The directory where error messages are stored
 lc-messages-dir			= /usr/share/mysql
-
-# The language for error messages
 lc-messages             = en_US
-
-# The size of the query cache (commented cause idk if I will need a better resources management)
-# query_cache_size		= 16M
-
-# The address to bind to (uncomment if needed for remote access)
-# bind-address          = 0.0.0.0
-
-# The file where error messages are logged
+bind-address            = 0.0.0.0
 log_error				= /var/log/mysql/error.log
-
-# The number of days to keep binary logs before automatic removal
-expire_logs_days		= 10
-
-# The default character set
-character-set-server	= utf8mb4
-
-# The default collation
-collation-server		= utf8mb4_general_ci
-
-# Embedded server settings (empty section)
-# [embedded]
-
-# MariaDB settings (empty section)
-# [mariadb]
-
-# MariaDB 10.3 specific settings (empty section)
-# [mariadb-10.3]

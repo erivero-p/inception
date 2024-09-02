@@ -1,14 +1,12 @@
-# Especifica la imagen base
-FROM  debian:bullseye
+FROM debian:bullseye
 
-# Upgrades system
-RUN apt update -y && apt upgrade -y
-# Installs mariadb
-RUN apt install mariadb-server -y 
-# Removes the package lists from the image, reducing the image size
-# also removes the default configuration file
-RUN rm -rf /var/lib/apt/lists/* && \
-	rm /etc/mysql/mariadb.conf.d/50-server.cnf
+RUN apt-get update -y && apt-get upgrade -y
+RUN apt-get install tini mariadb-server -y
+
+# removes the package lists reducing the image size
+RUN rm -rf /var/lib/apt/lists/*
+
+COPY ./conf/50-server.cnf /etc/mysql/mariadb.conf.d/50-server.cnf
 
 # creates the directory where the socket will be stored
 RUN mkdir -p /run/mysqld/ && \
@@ -23,8 +21,7 @@ COPY ./tools/db_init.sh /root/tools/db_init.sh
 RUN chmod +x /root/tools/db_init.sh
 
 EXPOSE 3306
-# executes the script to configure the server
-CMD [ "bash", "/root/tools/db_init.sh" ]
 
+ENTRYPOINT ["/usr/bin/tini", "--"]
 
-#  CMD ["sleep", "10000"]
+CMD ["sh", "/root/tools/db_init.sh"]
